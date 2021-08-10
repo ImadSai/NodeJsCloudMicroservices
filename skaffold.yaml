@@ -1,0 +1,18 @@
+apiVersion: skaffold/v2alpha3
+kind: Config
+build:
+  googleCloudBuild:
+    projectId: teak-cyclist-317616
+  artifacts:
+    - image: us.gcr.io/teak-cyclist-317616/auth
+      context: auth
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
+deploy:
+  kubectl:
+    manifests:
+      - ./infrastructure/k8s/*
