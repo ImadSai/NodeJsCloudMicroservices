@@ -1,0 +1,11 @@
+FROM node:alpine
+
+WORKDIR /app
+
+COPY package.json .
+
+RUN npm install --production --legacy-peer-deps
+
+COPY . .
+
+CMD [ "npm", "run", "dev"]
