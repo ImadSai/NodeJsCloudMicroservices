@@ -4,13 +4,19 @@ import { useState } from 'react';
 /**
  * Create Use Request Hook
  */
-const useRequest = ({ url, method, body }) => {
+const useRequest = ({ url, method, body, onSuccess }) => {
     const [errors, setErrors] = useState(null);
 
     const doRequest = async () => {
         try {
             setErrors(null);
             const response = await axios[method](url, body);
+
+            // If we defined a onSucess function we execute it with the data in the response
+            if (onSuccess) {
+                onSuccess(response.data);
+            }
+
             return response.data;
         } catch (err) {
             setErrors(
