@@ -1,7 +1,6 @@
 import buildClient from '../api/build-client';
 
 const index = ({ currentUser }) => {
-
     return (currentUser === null ? <h1> You are not Signed in </h1> : <h1> You are Signed in </h1>);
 }
 
