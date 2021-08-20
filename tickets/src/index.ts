@@ -5,7 +5,7 @@ import { app } from './app';
 const port = 3000;
 
 // Service name
-const serviceName = "Authentication Service";
+const serviceName = "Tickets Service";
 
 // JWT Key
 const jwtKey = process.env.JWT_KEY;

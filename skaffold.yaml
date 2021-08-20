@@ -1,9 +1,12 @@
 apiVersion: skaffold/v2alpha3
 kind: Config
 build:
+  # We build in Google cloud (Cloud Build)
   googleCloudBuild:
     projectId: teak-cyclist-317616
+  # Liste of Artifacts
   artifacts:
+    # Authentication Service Image
     - image: us.gcr.io/teak-cyclist-317616/auth
       context: auth
       docker:
@@ -12,6 +15,16 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
+    # Tickets Service Image
+    - image: us.gcr.io/teak-cyclist-317616/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '**/*.js'
+            dest: .
+    # Client Image
     - image: us.gcr.io/teak-cyclist-317616/client
       context: client
       docker:
@@ -20,6 +33,7 @@ build:
         manual:
           - src: '**/*.js'
             dest: .
+# Deployment specifications
 deploy:
   kubectl:
     manifests:
