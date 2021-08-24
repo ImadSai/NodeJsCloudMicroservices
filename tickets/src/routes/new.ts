@@ -1,7 +1,9 @@
 import { requireAuth, validateRequest } from '@isticketing/common';
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
+import { TicketCreatedPublisher } from '../events/publishers/ticket-created-publisher';
 import { Ticket } from '../models/ticket';
+import { natsWrapper } from '../nats-wrapper';
 
 
 const router = express.Router();
@@ -21,6 +23,14 @@ router.post('/api/tickets', requireAuth, [
     });
 
     const ticketSaved = await ticket.save();
+
+    // Publish event Ticket Created
+    await new TicketCreatedPublisher(natsWrapper.client).publish({
+        id: ticketSaved.id,
+        title: ticketSaved.title,
+        price: ticketSaved.price,
+        userId: ticketSaved.userId
+    });
 
     res.status(201).send(ticketSaved);
 });

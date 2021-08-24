@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { app } from './app';
+import { natsWrapper } from './nats-wrapper';
 
 // Port Used
 const port = 3000;
@@ -25,8 +26,19 @@ const start = async () => {
         throw new Error("MONGO_URI variable not present in the environment");
     }
 
-    // Connect to MongoDB
+    // Connect to MongoDB and Nats
     try {
+
+        await natsWrapper.connect(serviceName, 'ticketing', 'client1234', 'http://nats-srv:4222');
+
+        natsWrapper.client.on('close', () => {
+            console.log('NATS connection closed!');
+            process.exit();
+        });
+
+        process.on('SIGINT', () => natsWrapper.client.close());
+        process.on('SIGTERM', () => natsWrapper.client.close());
+
         console.log(`${serviceName} - Connextion to DB..`);
         await mongoose.connect(databaseURI, {
             useNewUrlParser: true,
