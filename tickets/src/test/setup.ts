@@ -5,6 +5,9 @@ import jwt from 'jsonwebtoken';
 
 let mongo: any;
 
+// Mock Nats Wrapper
+jest.mock(('../nats-wrapper'));
+
 /**
  * Hook Function - Before we launch the tests : 
  *  - Create a MongoMemoryServer
@@ -31,8 +34,14 @@ beforeAll(async () => {
 /**
  * Hook Function - Before every Test :
  *  - Clean database
+ *  - Clear all Mocks
  */
 beforeEach(async () => {
+
+    // Clear all Mocks
+    jest.clearAllMocks();
+
+    // Clean database
     const collections = await mongoose.connection.db.collections();
     for (let collection of collections) {
         await collection.deleteMany({});

@@ -14,10 +14,19 @@ const jwtKey = process.env.JWT_KEY;
 // Database URL
 const databaseURI = process.env.MONGO_URI;
 
+// Nats Cluster ID
+const natsClusterId = process.env.NATS_CLUSTER_ID;
+
+// Nats URL
+const natsURL = process.env.NATS_URL;
+
+// Nats Client Id (Pods Name)
+const natsClientId = process.env.NATS_CLIENT_ID
+
 // Function that Start Server
 const start = async () => {
 
-    // Check Env varibles
+    // Check Env variables
     if (!jwtKey) {
         throw new Error("JWT_KEY variable not present in the environment");
     }
@@ -26,10 +35,22 @@ const start = async () => {
         throw new Error("MONGO_URI variable not present in the environment");
     }
 
-    // Connect to MongoDB and Nats
+    if (!natsClusterId) {
+        throw new Error("NATS_CLUSTER_ID variable not present in the environment");
+    }
+
+    if (!natsURL) {
+        throw new Error("NATS_URL variable not present in the environment");
+    }
+
+    if (!natsClientId) {
+        throw new Error("NATS_CLIENT_ID variable not present in the environment");
+    }
+
+    // Connect to Nats and MongoDB 
     try {
 
-        await natsWrapper.connect(serviceName, 'ticketing', 'client1234', 'http://nats-srv:4222');
+        await natsWrapper.connect(serviceName, natsClusterId, natsClientId, natsURL);
 
         natsWrapper.client.on('close', () => {
             console.log('NATS connection closed!');
