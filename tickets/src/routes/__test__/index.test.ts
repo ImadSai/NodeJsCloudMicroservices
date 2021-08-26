@@ -1,6 +1,5 @@
 import request from 'supertest';
 import { app } from '../../app';
-import mongoose from 'mongoose';
 
 const createTicket = (title: string, price: number, cookie: string[]) => {
     return request(app)
@@ -13,7 +12,7 @@ const createTicket = (title: string, price: number, cookie: string[]) => {
         .expect(201);
 };
 
-it('cant fetch a list of tickets', async () => {
+it('fetches a list of tickets', async () => {
 
     const cookie = signin();
 

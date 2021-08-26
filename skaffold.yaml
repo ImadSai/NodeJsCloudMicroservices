@@ -13,7 +13,7 @@ build:
         dockerfile: Dockerfile
       sync:
         manual:
-          - src: 'src/**/*.ts'
+          - src: "src/**/*.ts"
             dest: .
     # Tickets Service Image
     - image: us.gcr.io/teak-cyclist-317616/tickets
@@ -22,7 +22,16 @@ build:
         dockerfile: Dockerfile
       sync:
         manual:
-          - src: '**/*.js'
+          - src: "**/*.js"
+            dest: .
+    # Orders Service Image
+    - image: us.gcr.io/teak-cyclist-317616/orders
+      context: orders
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "**/*.js"
             dest: .
     # Client Image
     - image: us.gcr.io/teak-cyclist-317616/client
@@ -31,7 +40,7 @@ build:
         dockerfile: Dockerfile
       sync:
         manual:
-          - src: '**/*.js'
+          - src: "**/*.js"
             dest: .
 # Deployment specifications
 deploy:
