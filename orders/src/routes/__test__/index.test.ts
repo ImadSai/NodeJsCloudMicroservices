@@ -51,4 +51,6 @@ it('fetches a list of orders', async () => {
     expect(response.body.length).toEqual(2);
     expect(response.body[0].id).toEqual(orderOne.id);
     expect(response.body[1].id).toEqual(orderTwo.id);
+    expect(response.body[0].ticket.id).toEqual(ticketTwo.id);
+    expect(response.body[1].ticket.id).toEqual(ticketThree.id);
 });
