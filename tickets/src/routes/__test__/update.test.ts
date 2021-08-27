@@ -16,7 +16,7 @@ const createTicket = (title: string, price: number, cookie: string[]) => {
 
 it('it returns a 404 if the provided id does not exist', async () => {
 
-    const ticketId = mongoose.Types.ObjectId();
+    const ticketId = new mongoose.Types.ObjectId();
     const cookie = signin();
     const title = 'concert';
     const price = 20;
@@ -32,7 +32,7 @@ it('it returns a 404 if the provided id does not exist', async () => {
 });
 
 it('it returns a 401 if the user is not authenticated', async () => {
-    const ticketId = mongoose.Types.ObjectId();
+    const ticketId = new mongoose.Types.ObjectId();
     const title = 'concert';
     const price = 20;
 

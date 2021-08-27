@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 
 it('returns a 404 if the ticket is not found', async () => {
 
-    const ticketId = mongoose.Types.ObjectId('4eb6e7e7e9b7f4194e000001');
+    const ticketId = new mongoose.Types.ObjectId('4eb6e7e7e9b7f4194e000001');
 
     const response = await request(app)
         .get(`/api/tickets/${ticketId}`)

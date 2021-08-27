@@ -1,9 +1,11 @@
 import mongoose from 'mongoose';
 import { Order, OrderStatus } from './order';
+import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 // An Interface that describes the properties
 // that are required to create a new User 
 interface ticketInterface {
+    id: string;
     title: string;
     price: number;
 }
@@ -11,8 +13,10 @@ interface ticketInterface {
 // An Interface that describes the properties
 // that a User Document has 
 export interface TicketDoc extends mongoose.Document {
+    id: string;
     title: string;
     price: number;
+    version: number;
     isReserved(): Promise<Boolean>;
 }
 
@@ -42,9 +46,17 @@ const ticketSchema = new mongoose.Schema<TicketDoc>({
     }
 });
 
+// Set Version Key
+ticketSchema.set('versionKey', 'version');
+ticketSchema.plugin(updateIfCurrentPlugin);
+
 // Defining the Build Function
 ticketSchema.statics.build = (attrs: ticketInterface) => {
-    return new Ticket(attrs);
+    return new Ticket({
+        _id: attrs.id,
+        title: attrs.title,
+        price: attrs.price
+    });
 };
 
 ticketSchema.methods.isReserved = async function (): Promise<Boolean> {

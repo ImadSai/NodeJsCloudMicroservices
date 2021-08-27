@@ -22,10 +22,7 @@ beforeAll(async () => {
     const mongoUri = await mongo.getUri();
 
     // Connect Mongoose to the MongoMemoryServer
-    await mongoose.connect(mongoUri, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    });
+    await mongoose.connect(mongoUri);
 });
 
 /**

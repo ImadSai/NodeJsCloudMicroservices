@@ -28,11 +28,7 @@ const start = async () => {
     // Connect to MongoDB
     try {
         console.log(`${serviceName} - Connextion to DB..`);
-        await mongoose.connect(databaseURI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            useCreateIndex: true
-        });
+        await mongoose.connect(databaseURI);
         console.log(`${serviceName} - Connected to DB`);
     } catch (err) {
         console.log(`${serviceName} - Error : ${err}`);

@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 import { app } from './app';
+import { TicketCreatedListener } from './events/listeners/ticket-created-listerner';
+import { TicketUpdatedListener } from './events/listeners/ticket-updated-listener';
 import { natsWrapper } from './nats-wrapper';
 
 // Port Used
@@ -60,12 +62,12 @@ const start = async () => {
         process.on('SIGINT', () => natsWrapper.client.close());
         process.on('SIGTERM', () => natsWrapper.client.close());
 
+        // Listening for events
+        new TicketCreatedListener(natsWrapper.client).listen();
+        new TicketUpdatedListener(natsWrapper.client).listen();
+
         console.log(`${serviceName} - Connextion to DB..`);
-        await mongoose.connect(databaseURI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            useCreateIndex: true
-        });
+        await mongoose.connect(databaseURI);
         console.log(`${serviceName} - Connected to DB`);
     } catch (err) {
         console.log(`${serviceName} - Error : ${err}`);

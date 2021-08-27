@@ -40,7 +40,8 @@ router.put('/api/tickets/:id', requireAuth, [
         id: updatedTicket.id,
         title: updatedTicket.title,
         price: updatedTicket.price,
-        userId: updatedTicket.userId
+        userId: updatedTicket.userId,
+        version: ticket.version
     });
 
     res.status(200).send(updatedTicket);

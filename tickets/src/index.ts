@@ -61,11 +61,7 @@ const start = async () => {
         process.on('SIGTERM', () => natsWrapper.client.close());
 
         console.log(`${serviceName} - Connextion to DB..`);
-        await mongoose.connect(databaseURI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            useCreateIndex: true
-        });
+        await mongoose.connect(databaseURI);
         console.log(`${serviceName} - Connected to DB`);
     } catch (err) {
         console.log(`${serviceName} - Error : ${err}`);
