@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 // An Interface that describes the properties
 // that are required to create a new User 
@@ -52,7 +51,10 @@ const ticketSchema = new mongoose.Schema<TicketDoc>({
 
 // Set Version Key
 ticketSchema.set('versionKey', 'version');
-ticketSchema.plugin(updateIfCurrentPlugin);
+ticketSchema.pre('save', function (next) {
+    this.increment();
+    return next();
+});
 
 // Defining the Build Function
 ticketSchema.statics.build = (attrs: ticketInterface) => {

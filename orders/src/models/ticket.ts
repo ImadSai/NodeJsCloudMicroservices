@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import { Order, OrderStatus } from './order';
-import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 // An Interface that describes the properties
 // that are required to create a new User 
@@ -24,6 +23,7 @@ export interface TicketDoc extends mongoose.Document {
 // that a User Model has 
 interface TicketModel extends mongoose.Model<TicketDoc> {
     build(attrs: ticketInterface): TicketDoc;
+    findByEvent(event: { id: string, version: number }): Promise<TicketDoc | null>;
 }
 
 // Defining the Schema
@@ -48,7 +48,13 @@ const ticketSchema = new mongoose.Schema<TicketDoc>({
 
 // Set Version Key
 ticketSchema.set('versionKey', 'version');
-ticketSchema.plugin(updateIfCurrentPlugin);
+ticketSchema.pre('save', function (done) {
+    this.increment();
+    this.$where = {
+        version: this.get('version') - 1
+    }
+    done();
+});
 
 // Defining the Build Function
 ticketSchema.statics.build = (attrs: ticketInterface) => {
@@ -56,6 +62,14 @@ ticketSchema.statics.build = (attrs: ticketInterface) => {
         _id: attrs.id,
         title: attrs.title,
         price: attrs.price
+    });
+};
+
+// Defining the find by event
+ticketSchema.statics.findByEvent = (event: { id: string, version: number }) => {
+    return Ticket.findOne({
+        _id: event.id,
+        version: event.version - 1
     });
 };
 

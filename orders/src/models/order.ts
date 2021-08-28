@@ -1,7 +1,6 @@
 import { OrderStatus } from '@isticketing/common';
 import mongoose from 'mongoose';
 import { TicketDoc } from './ticket';
-import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 // An Interface that describes the properties
 // that are required to create a new Order 
@@ -58,7 +57,10 @@ const orderSchema = new mongoose.Schema<OrderDoc>({
 
 // Set Version Key
 orderSchema.set('versionKey', 'version');
-orderSchema.plugin(updateIfCurrentPlugin);
+orderSchema.pre('save', function (done) {
+    this.increment();
+    done();
+});
 
 // Defining the Build Function
 orderSchema.statics.build = (attrs: orderInterface) => {

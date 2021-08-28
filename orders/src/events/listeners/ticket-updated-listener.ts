@@ -13,10 +13,7 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEvent> {
         const { id, title, price, version } = data;
 
         // Find a Ticket in the DB 
-        const ticket = await Ticket.findOne({
-            _id: id,
-            version: version - 1
-        });
+        const ticket = await Ticket.findByEvent({ id, version });
 
         if (!ticket) {
             throw new NotFoundError();
@@ -25,7 +22,8 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEvent> {
         // Update fields
         ticket.set({
             title,
-            price
+            price,
+            version
         });
 
         // Save
