@@ -49,7 +49,6 @@ const ticketSchema = new mongoose.Schema<TicketDoc>({
 // Set Version Key
 ticketSchema.set('versionKey', 'version');
 ticketSchema.pre('save', function (done) {
-    this.increment();
     this.$where = {
         version: this.get('version') - 1
     }
