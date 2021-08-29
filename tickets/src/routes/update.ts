@@ -1,4 +1,4 @@
-import { NotAuthorizedError, NotFoundError, requireAuth, validateRequest } from '@isticketing/common';
+import { BadRequestError, NotAuthorizedError, NotFoundError, requireAuth, validateRequest } from '@isticketing/common';
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import { TicketUpdatedPublisher } from '../events/publishers/ticket-updated-publisher';
@@ -25,6 +25,11 @@ router.put('/api/tickets/:id', requireAuth, [
     // Check if the Ticket is updated by the Owner
     if (ticket.userId !== req.currentUser!.id) {
         throw new NotAuthorizedError();
+    }
+
+    // If the ticket is locked (Reserved) we throw an error
+    if (ticket.orderId) {
+        throw new BadRequestError('Cannot edit a reserved ticket');
     }
 
     // Update the ticket

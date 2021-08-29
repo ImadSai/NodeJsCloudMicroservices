@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: orders
-          image: us.gcr.io/teak-cyclist-317616/orders:latest
+          image: imadsa/orders:latest
           imagePullPolicy: Always
           env:
             - name: NATS_CLIENT_ID

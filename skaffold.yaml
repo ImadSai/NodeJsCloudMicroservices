@@ -1,13 +1,20 @@
 apiVersion: skaffold/v2alpha3
 kind: Config
 build:
-  # We build in Google cloud (Cloud Build)
-  googleCloudBuild:
-    projectId: teak-cyclist-317616
+  # We build in Google cloud (Cloud Build) (IMPORTANT: change the image name here and in Depls files)
+  #googleCloudBuild:
+  #projectId: teak-cyclist-317616
+  # We build the project Locally and push to docker regitery
+  local:
+    push: true
+    concurrency: 2
+  # Tag policy with the sha256
+  tagPolicy:
+    sha256: {}
   # Liste of Artifacts
   artifacts:
     # Authentication Service Image
-    - image: us.gcr.io/teak-cyclist-317616/auth
+    - image: imadsa/auth
       context: auth
       docker:
         dockerfile: Dockerfile
@@ -16,7 +23,7 @@ build:
           - src: "src/**/*.ts"
             dest: .
     # Tickets Service Image
-    - image: us.gcr.io/teak-cyclist-317616/tickets
+    - image: imadsa/tickets
       context: tickets
       docker:
         dockerfile: Dockerfile
@@ -25,7 +32,7 @@ build:
           - src: "**/*.js"
             dest: .
     # Orders Service Image
-    - image: us.gcr.io/teak-cyclist-317616/orders
+    - image: imadsa/orders
       context: orders
       docker:
         dockerfile: Dockerfile
@@ -34,7 +41,7 @@ build:
           - src: "**/*.js"
             dest: .
     # Client Image
-    - image: us.gcr.io/teak-cyclist-317616/client
+    - image: imadsa/client
       context: client
       docker:
         dockerfile: Dockerfile

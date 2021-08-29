@@ -2,6 +2,7 @@ import request from 'supertest';
 import { app } from '../../app';
 import mongoose from 'mongoose';
 import { natsWrapper } from '../../nats-wrapper';
+import { Ticket } from '../../models/ticket';
 
 const createTicket = (title: string, price: number, cookie: string[]) => {
     return request(app)
@@ -124,4 +125,30 @@ it('publishes en event when a ticket is updated', async () => {
         .expect(200);
 
     expect(natsWrapper.client.publish).toHaveBeenCalled();
+});
+
+it('reject an update if the ticket is locked', async () => {
+
+    const cookie = signin();
+    const title = 'concert';
+    const price = 20;
+
+    const { body: ticketSaved } = await createTicket(title, price, cookie);
+
+    // Set the OrderId
+    ticketSaved.orderId = new mongoose.Types.ObjectId();
+
+    // Update the Ticket in the DB
+    const updateTicket = Ticket.build(ticketSaved);
+    updateTicket.save();
+
+    const response = await request(app)
+        .put(`/api/tickets/${updateTicket.id}`)
+        .set('Cookie', cookie)
+        .send({
+            title: "concert",
+            price: 45
+        })
+        .expect(400);
+
 });
