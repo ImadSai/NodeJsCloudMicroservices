@@ -5,7 +5,7 @@ class NatsWrapper {
 
     get client() {
         if (!this._client) {
-            throw new Error('Cannot access NATS Client before connectiong')
+            throw new Error('Cannot access NATS Client before connecting')
         }
         return this._client;
     }

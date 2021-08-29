@@ -40,6 +40,15 @@ build:
         manual:
           - src: "**/*.js"
             dest: .
+    # Expiration Service Image
+    - image: imadsa/expiration
+      context: expiration
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "**/*.js"
+            dest: .
     # Client Image
     - image: imadsa/client
       context: client
