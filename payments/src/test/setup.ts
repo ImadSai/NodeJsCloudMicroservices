@@ -5,8 +5,9 @@ import jwt from 'jsonwebtoken';
 
 let mongo: any;
 
-// Mock Nats Wrapper
+// Mock Nats Wrapper and Stripe
 jest.mock(('../nats-wrapper'));
+jest.mock(('../stripe'));
 
 /**
  * Hook Function - Before we launch the tests : 

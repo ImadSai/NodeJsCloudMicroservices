@@ -3,6 +3,9 @@ import { body } from "express-validator";
 import { Router, Request, Response } from 'express';
 import { Order } from "../models/order";
 import { stripe } from "../stripe";
+import { Payment } from "../models/payment";
+import { natsWrapper } from "../nats-wrapper";
+import { PaymentCreatedPublisher } from "../events/publishers/payment-created-publisher";
 
 
 const router = Router();
@@ -29,15 +32,28 @@ router.post('/api/payments', requireAuth, [
         throw new BadRequestError("Order is cancelled");
     }
 
-    // charge the user with stripe
-    await stripe.charges.create({
-        currency: 'usd',
+    // Charge the user with stripe
+    const charge = await stripe.charges.create({
+        currency: 'eur',
         amount: order.price * 100,
         source: token
-    })
+    });
 
-    res.send({ sucess: true });
+    // Save the payment informations
+    const payment = Payment.build({
+        orderId: orderId,
+        stripeId: charge.id
+    });
+    await payment.save();
 
+    // Publish event saying that the order was created
+    await new PaymentCreatedPublisher(natsWrapper.client).publish({
+        id: payment.id,
+        orderId: payment.orderId,
+        stripeId: payment.stripeId
+    });
+
+    res.status(201).send({ id: payment.id });
 });
 
 export { router as newPaymentRouter };
