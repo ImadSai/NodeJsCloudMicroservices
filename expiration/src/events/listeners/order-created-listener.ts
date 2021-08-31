@@ -15,6 +15,8 @@ export class OrderCreatedListener extends Listener<OrderCreatedEvent> {
         const { id, expireAt } = data;
         const delay = new Date(expireAt).getTime() - new Date().getTime();
 
+        console.log(`Expiration in ${delay}`);
+
         // Add the order to the Queue and Delay
         await expirationQueue.add({
             orderId: id

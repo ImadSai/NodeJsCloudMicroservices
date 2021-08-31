@@ -1,30 +1,30 @@
 import { OrderStatus } from '@isticketing/common';
 import mongoose from 'mongoose';
-import { TicketDoc } from './ticket';
 
 // An Interface that describes the properties
 // that are required to create a new Order 
 interface orderInterface {
+    id: string;
+    version: number;
     userId: string;
+    price: number;
     status: OrderStatus;
-    expireAt: Date;
-    ticket: TicketDoc;
 }
 
 // An Interface that describes the properties
 // that a User Document has 
 interface OrderDoc extends mongoose.Document {
+    version: number;
     userId: string;
     status: OrderStatus;
-    expireAt: Date;
-    ticket: TicketDoc;
-    version: number;
+    price: number;
 }
 
 // An Interface that describes the properties
 // that a User Model has 
 interface OrderModel extends mongoose.Model<OrderDoc> {
     build(attrs: orderInterface): OrderDoc;
+    findByEvent(event: { id: string, version: number }): Promise<OrderDoc | null>;
 }
 
 // Defining the Schema
@@ -39,12 +39,9 @@ const orderSchema = new mongoose.Schema<OrderDoc>({
         enum: Object.values(OrderStatus),
         default: OrderStatus.Created
     },
-    expireAt: {
-        type: mongoose.Schema.Types.Date
-    },
-    ticket: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Ticket'
+    price: {
+        type: Number,
+        required: true
     }
 }, {
     toJSON: {
@@ -58,13 +55,28 @@ const orderSchema = new mongoose.Schema<OrderDoc>({
 // Set Version Key
 orderSchema.set('versionKey', 'version');
 orderSchema.pre('save', function (done) {
-    this.increment();
+    this.$where = {
+        version: this.get('version') - 1
+    }
     done();
 });
 
 // Defining the Build Function
 orderSchema.statics.build = (attrs: orderInterface) => {
-    return new Order(attrs);
+    return new Order({
+        _id: attrs.id,
+        version: attrs.version,
+        price: attrs.price,
+        userId: attrs.userId,
+        status: attrs.status,
+    });
+};
+// Defining the find by event
+orderSchema.statics.findByEvent = (event: { id: string, version: number }) => {
+    return Order.findOne({
+        _id: event.id,
+        version: event.version - 1
+    });
 };
 
 const Order = mongoose.model<OrderDoc, OrderModel>('Order', orderSchema);

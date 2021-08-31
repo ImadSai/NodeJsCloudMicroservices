@@ -49,6 +49,15 @@ build:
         manual:
           - src: "**/*.js"
             dest: .
+    # Payment Service Image
+    - image: imadsa/payments
+      context: payments
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "**/*.js"
+            dest: .
     # Client Image
     - image: imadsa/client
       context: client
