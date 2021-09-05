@@ -1,9 +1,7 @@
 ######################
 # Project Specific
 ######################
-/build/www/**
-/src/test/javascript/coverage/
-/src/test/javascript/PhantomJS*/
+
 
 ######################
 # Node
@@ -124,6 +122,15 @@ Desktop.ini
 *.*~
 *~
 .merge_file*
+
+######################
+# TERRAFORM
+######################
+**/.terraform/*
+**/.terraform*
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
 
 ######################
 # Gradle Wrapper
