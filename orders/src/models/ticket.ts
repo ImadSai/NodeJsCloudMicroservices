@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
-import { Order, OrderStatus } from './order';
+import { Order } from './order';
+import { OrderStatus } from '@isticketing/common';
 
 // An Interface that describes the properties
 // that are required to create a new User 
@@ -75,16 +76,15 @@ ticketSchema.statics.findByEvent = (event: { id: string, version: number }) => {
 ticketSchema.methods.isReserved = async function (): Promise<Boolean> {
     const existingOrder = await Order.findOne({
         ticket: this,
-        status: {
-            $in: [
-                OrderStatus.Created,
-                OrderStatus.AwaintingPayment,
-                OrderStatus.Complete,
-            ]
-        }
+        $in: [
+            OrderStatus.AwaitingPayment,
+            OrderStatus.Created,
+            OrderStatus.Complete
+        ]
     });
+
     return (existingOrder != null);
-}
+};
 
 const Ticket = mongoose.model<TicketDoc, TicketModel>('Ticket', ticketSchema);
 
