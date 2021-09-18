@@ -59,7 +59,7 @@ qemu-img convert -O qcow2 -f raw INPUT-PATH  OUTPUT.qcow2
 ```
 
 - Création d'une VM avec ID 1000 nommée ubuntu-cloudinit-template, 3Go RAM, 1 proco, 2 coeurs
-qm create 1000 -name ubuntu-cloudinit-template -memory 3072 -net0 virtio,bridge=vmbr0 -cores 2 -sockets 1 -cpu cputype=kvm64 -kvm 1 -numa 1
+qm create 1000 -name ubuntu-cloudinit-template -memory 4096 -net0 virtio,bridge=vmbr0 -cores 2 -sockets 1 -cpu cputype=kvm64 -kvm 1 -numa 1
 
 - Import du disque
 ```
@@ -105,3 +105,16 @@ qm template 1000
 qm resize 1000 virtio0 +18G
 ```
 
+- Create Cluster and copy config
+```
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+sudo mkdir -p $HOME/.kube
+sudo kubernetes-master:~$ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+
+
+- Deploy POD Network 
+```
+sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+```

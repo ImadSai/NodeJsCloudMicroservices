@@ -27,7 +27,7 @@ const start = async () => {
 
     // Connect to MongoDB
     try {
-        console.log(`${serviceName} - Connextion to DB..`);
+        console.log(`${serviceName} - Connection to DB..`);
         await mongoose.connect(databaseURI);
         console.log(`${serviceName} - Connected to DB`);
     } catch (err) {

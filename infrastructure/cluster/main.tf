@@ -1,3 +1,4 @@
+# Providers
 terraform {
   required_providers {
     proxmox = {
@@ -6,7 +7,6 @@ terraform {
     }
   }
 }
-
 
 # Set TF_VAR_pm_user and TF_VAR_pm_password as Environement Variables 
 variable "pm_user" {}
@@ -21,21 +21,21 @@ provider "proxmox" {
   pm_tls_insecure = "true"
 }
 
-# Création variable pour nombre de VMs à déployer (récupéré via l'argument -var 'nombre=X')
+# Nombre de Workers à créer
 variable "workers" {
   type        = number
   description = "Number of workers to deploy"
 
   validation {
-    condition     = length(var.workers) > 0
+    condition     = length(var.workers) >= 0
     error_message = "Must have at least 1 worker."
   }
 }
 
-# Définition du Master
+# Définition du Node Master
 resource "proxmox_vm_qemu" "proxmox_vm_master" {
   count = 1
-  name  = "master"
+  name  = "ticketing-master"
 
   # Nom du node sur lequel le déploiement aura lieu
   target_node = "pve"
@@ -47,12 +47,15 @@ resource "proxmox_vm_qemu" "proxmox_vm_master" {
   # Activate QEMU agent for this VM
   agent = 1
 
+  # The destination resource pool for the new VM
+  pool = "Ticketing-project"
+
   # Specs
   os_type  = "cloud-init"
   cores    = 2
   sockets  = "1"
   cpu      = "host"
-  memory   = 3075
+  memory   = 4096
   scsihw   = "virtio-scsi-pci"
   bootdisk = "virtio0"
 
@@ -78,12 +81,44 @@ resource "proxmox_vm_qemu" "proxmox_vm_master" {
   sshkeys = <<EOF
   ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDTDdkEt6n8BdG7bPiLyrXUmRNpiYbcoXjB27VbvCJ/uFe5EB/EEUDgvuViDznhl1ZaIwdR3EgGQeWa9CyUuJMBKPAo55TMSaXhFx6wTWvfEgNLRNcevC/CKqRGsgjsG+h8kHkmfhIvNOz2NNo0b/6e4/FgGj1Tt6uC0eQgsuBGsGCfu0EC58LqkT5fk96Z0V2Nh7lHrN+fUMgh0REOJkZXzTprlgckqWfeCI0aIQ4xbeIFRHodQqv5Fp7Sr3LWjJqwQnQ5zr9fWoxoKZ5+/j1takUs7zzvPmDujeezehqRHI+FvYHUAyoUO5crXoF6Mf44MIabt8GltmRq4minqSE5 imadsalki@mac-mini-de-imad.home
   EOF
+
+  # Copie du fichier de creation du Cluster
+  provisioner "file" {
+    source      = "scripts/start-master-cluster.sh"
+    destination = "/tmp/start-master-cluster.sh"
+    connection {
+      type        = "ssh"
+      user        = "imadsalki"
+      private_key = file("~/.ssh/id_rsa")
+      host        = self.ssh_host
+    }
+  }
+
+  # Exécution du script 
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/start-master-cluster.sh",
+      "/tmp/start-master-cluster.sh",
+    ]
+    connection {
+      type        = "ssh"
+      user        = "imadsalki"
+      private_key = file("~/.ssh/id_rsa")
+      host        = self.ssh_host
+    }
+  }
 }
 
-# Définition des Workers
+# Définition des Workers Nodes
 resource "proxmox_vm_qemu" "proxmox_vm_worker" {
+
+  # Depends on Master
+  depends_on = [
+    proxmox_vm_qemu.proxmox_vm_master,
+  ]
+
   count = var.workers
-  name  = "worker-0${count.index + 1}"
+  name  = "ticketing-worker-0${count.index + 1}"
 
   # Nom du node sur lequel le déploiement aura lieu
   target_node = "pve"
@@ -95,12 +130,15 @@ resource "proxmox_vm_qemu" "proxmox_vm_worker" {
   # Activate QEMU agent for this VM
   agent = 1
 
+  # The destination resource pool for the new VM
+  pool = "Ticketing-project"
+
   # Specs
   os_type  = "cloud-init"
   cores    = 2
   sockets  = "1"
   cpu      = "host"
-  memory   = 3075
+  memory   = 4096
   scsihw   = "virtio-scsi-pci"
   bootdisk = "virtio0"
 
@@ -110,7 +148,7 @@ resource "proxmox_vm_qemu" "proxmox_vm_worker" {
   cipassword = "worker"
 
   disk {
-    size     = "10G"
+    size     = "15G"
     type     = "virtio"
     storage  = "local-lvm"
     iothread = 1
@@ -126,81 +164,4 @@ resource "proxmox_vm_qemu" "proxmox_vm_worker" {
   sshkeys = <<EOF
   ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDTDdkEt6n8BdG7bPiLyrXUmRNpiYbcoXjB27VbvCJ/uFe5EB/EEUDgvuViDznhl1ZaIwdR3EgGQeWa9CyUuJMBKPAo55TMSaXhFx6wTWvfEgNLRNcevC/CKqRGsgjsG+h8kHkmfhIvNOz2NNo0b/6e4/FgGj1Tt6uC0eQgsuBGsGCfu0EC58LqkT5fk96Z0V2Nh7lHrN+fUMgh0REOJkZXzTprlgckqWfeCI0aIQ4xbeIFRHodQqv5Fp7Sr3LWjJqwQnQ5zr9fWoxoKZ5+/j1takUs7zzvPmDujeezehqRHI+FvYHUAyoUO5crXoF6Mf44MIabt8GltmRq4minqSE5 imadsalki@mac-mini-de-imad.home
   EOF
-}
-
-# Definition de Rancher
-resource "proxmox_vm_qemu" "proxmox_vm_rancher" {
-
-  count = 1
-  name  = "rancher"
-
-  # Nom du node sur lequel le déploiement aura lieu
-  target_node = "pve"
-
-  # The template name to clone this vm from and Full clone
-  clone      = "ubuntu-cloudinit-template"
-  full_clone = false
-
-  # Activate QEMU agent for this VM
-  agent = 1
-
-  # Specs
-  os_type  = "cloud-init"
-  cores    = 2
-  sockets  = "1"
-  cpu      = "host"
-  memory   = 5120
-  scsihw   = "virtio-scsi-pci"
-  bootdisk = "virtio0"
-
-  # Setup de l'IP statique
-  ipconfig0  = "ip=192.168.1.110/24,gw=192.168.1.1"
-  ciuser     = "imadsalki"
-  cipassword = "worker"
-
-  disk {
-    size     = "10G"
-    type     = "virtio"
-    storage  = "local-lvm"
-    iothread = 1
-  }
-
-  network {
-    model  = "virtio"
-    bridge = "vmbr0"
-  }
-
-  # Configuration relative à CloudInit
-  # Clé SSH publique
-  sshkeys = <<EOF
-  ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDTDdkEt6n8BdG7bPiLyrXUmRNpiYbcoXjB27VbvCJ/uFe5EB/EEUDgvuViDznhl1ZaIwdR3EgGQeWa9CyUuJMBKPAo55TMSaXhFx6wTWvfEgNLRNcevC/CKqRGsgjsG+h8kHkmfhIvNOz2NNo0b/6e4/FgGj1Tt6uC0eQgsuBGsGCfu0EC58LqkT5fk96Z0V2Nh7lHrN+fUMgh0REOJkZXzTprlgckqWfeCI0aIQ4xbeIFRHodQqv5Fp7Sr3LWjJqwQnQ5zr9fWoxoKZ5+/j1takUs7zzvPmDujeezehqRHI+FvYHUAyoUO5crXoF6Mf44MIabt8GltmRq4minqSE5 imadsalki@mac-mini-de-imad.home
-  EOF
-
-  # Déclaration du script de démarrage, en utilisant user + clé SSH privée
-  provisioner "file" {
-    source      = "./startup-rancher.sh"
-    destination = "/tmp/startup-rancher.sh"
-    connection {
-      type        = "ssh"
-      user        = "imadsalki"
-      private_key = file("~/.ssh/id_rsa")
-      host        = self.ssh_host
-    }
-  }
-
-  # Exécution du script de démarrage
-  provisioner "remote-exec" {
-    inline = [
-      "chmod +x /tmp/startup-rancher.sh",
-      "/tmp/startup-rancher.sh",
-    ]
-    connection {
-      type        = "ssh"
-      user        = "imadsalki"
-      private_key = file("~/.ssh/id_rsa")
-      host        = self.ssh_host
-    }
-  }
-
-
 }

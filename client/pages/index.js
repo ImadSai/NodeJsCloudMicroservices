@@ -5,7 +5,7 @@ const index = ({ currentUser }) => {
 }
 
 index.getInitialProps = async (context) => {
-    const client = buildClient(context);
+    const client = buildClient(context, 'auth-srv:3000');
     const { data } = await client.get('/api/users/currentuser');
     return data;
 };

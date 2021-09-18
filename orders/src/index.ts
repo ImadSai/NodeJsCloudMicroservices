@@ -57,7 +57,7 @@ const start = async () => {
         await natsWrapper.connect(serviceName, natsClusterId, natsClientId, natsURL);
 
         natsWrapper.client.on('close', () => {
-            console.log('NATS connection closed!');
+            console.log('NATS Connection closed!');
             process.exit();
         });
 
@@ -70,7 +70,7 @@ const start = async () => {
         new ExpirationCompleteListener(natsWrapper.client).listen();
         new PaymentCreatedListener(natsWrapper.client).listen();
 
-        console.log(`${serviceName} - Connextion to DB..`);
+        console.log(`${serviceName} - Connection to DB..`);
         await mongoose.connect(databaseURI);
         console.log(`${serviceName} - Connected to DB`);
     } catch (err) {
