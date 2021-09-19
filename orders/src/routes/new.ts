@@ -6,6 +6,7 @@ import { Ticket } from '../models/ticket';
 import { Order } from '../models/order';
 import { OrderCreatedPublisher } from '../events/publishers/order-created-publisher';
 import { natsWrapper } from '../nats-wrapper';
+import Logger from '../models/logger';
 
 const router = express.Router();
 
@@ -58,6 +59,8 @@ router.post('/api/orders', requireAuth, [
             price: ticket.price
         }
     });
+
+    Logger.info(`Order created`);
 
     res.status(201).send(order);
 });
