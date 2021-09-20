@@ -20,6 +20,8 @@ spec:
           env:
             - name: MONGO_URI
               value: "mongodb://auth-mongo-srv:27017/auth"
+            - name: LOGSTASH_URL
+              value: "192.168.1.109:5000"
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:

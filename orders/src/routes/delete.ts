@@ -33,6 +33,8 @@ router.delete('/api/orders/:orderId', requireAuth, async (req: Request, res: Res
         }
     });
 
+    logger.info(`Order cancelled`, { "orderId": order.id, "userId": req.currentUser!.id });
+
     res.status(204).send(order);
 });
 

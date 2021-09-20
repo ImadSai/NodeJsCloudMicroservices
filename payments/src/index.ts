@@ -1,3 +1,4 @@
+import { loggerHelper } from '@isticketing/common';
 import mongoose from 'mongoose';
 import { app } from './app';
 import { OrderCancelledListener } from './events/listeners/order-cancelled-listener';
@@ -28,6 +29,14 @@ const natsClientId = process.env.NATS_CLIENT_ID
 // Stripe Key
 const stripeKey = process.env.STRIPE_KEY;
 
+// Logstash URL
+const logstashUrl = process.env.LOGSTASH_URL
+
+// Declare a global Functions
+declare global {
+    var logger: any;
+}
+
 // Function that Start Server
 const start = async () => {
 
@@ -56,13 +65,21 @@ const start = async () => {
         throw new Error("STRIPE_KEY variable not present in the environment");
     }
 
+    if (!logstashUrl) {
+        throw new Error("LOGSTASH_URL variable not present in the environment");
+    }
+
+    // Init logger
+    await loggerHelper.init(logstashUrl);
+    global.logger = loggerHelper.logger;
+
     // Connect to Nats and MongoDB 
     try {
 
         await natsWrapper.connect(serviceName, natsClusterId, natsClientId, natsURL);
 
         natsWrapper.client.on('close', () => {
-            console.log('NATS Connection closed!');
+            logger.debug('NATS Connection closed!');
             process.exit();
         });
 
@@ -73,16 +90,16 @@ const start = async () => {
         new OrderCreatedListener(natsWrapper.client).listen();
         new OrderCancelledListener(natsWrapper.client).listen();
 
-        console.log(`${serviceName} - Connection to DB..`);
+        logger.debug(`${serviceName} - Connection to DB..`);
         await mongoose.connect(databaseURI);
-        console.log(`${serviceName} - Connected to DB`);
+        logger.debug(`${serviceName} - Connected to DB`);
     } catch (err) {
-        console.log(`${serviceName} - Error : ${err}`);
+        logger.error(`${serviceName} - Error : ${err}`);
     }
 
     // Publish service
     app.listen(port, () => {
-        console.log(`${serviceName} - listing on port : ${port}`);
+        logger.info(`${serviceName} - listing on port : ${port}`);
     });
 };
 

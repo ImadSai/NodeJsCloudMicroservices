@@ -7,7 +7,6 @@ import { Payment } from "../models/payment";
 import { natsWrapper } from "../nats-wrapper";
 import { PaymentCreatedPublisher } from "../events/publishers/payment-created-publisher";
 
-
 const router = Router();
 
 router.post('/api/payments', requireAuth, [
@@ -37,12 +36,14 @@ router.post('/api/payments', requireAuth, [
         currency: 'eur',
         amount: order.price * 100,
         source: token
+    }).catch(err => {
+        logger.error(`Payment error`, { "orderId": orderId, "userId": order.userId, "error": err });
     });
 
     // Save the payment informations
     const payment = Payment.build({
         orderId: orderId,
-        stripeId: charge.id
+        stripeId: charge!.id
     });
     await payment.save();
 
@@ -52,6 +53,9 @@ router.post('/api/payments', requireAuth, [
         orderId: payment.orderId,
         stripeId: payment.stripeId
     });
+
+    // log payment sucess
+    logger.info(`Payment success`, { "orderId": orderId, "userId": order.userId, "paymentId": payment.id, "stripeId": payment.stripeId });
 
     res.status(201).send({ id: payment.id });
 });

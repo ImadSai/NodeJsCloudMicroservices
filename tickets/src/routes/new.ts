@@ -33,6 +33,9 @@ router.post('/api/tickets', requireAuth, [
         version: ticket.version
     });
 
+    // Log informations 
+    logger.info(`Ticket Created`, { "ticketId": ticketSaved.id, "userId": ticketSaved.userId });
+
     res.status(201).send(ticketSaved);
 });
 

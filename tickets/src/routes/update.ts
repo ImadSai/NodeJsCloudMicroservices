@@ -49,6 +49,9 @@ router.put('/api/tickets/:id', requireAuth, [
         version: ticket.version
     });
 
+    // Log informations 
+    logger.info(`Ticket Updated`, { "ticketId": updatedTicket.id, "userId": updatedTicket.userId });
+
     res.status(200).send(updatedTicket);
 });
 
