@@ -5,6 +5,7 @@ import { TicketCreatedListener } from './events/listeners/ticket-created-listene
 import { TicketUpdatedListener } from './events/listeners/ticket-updated-listener';
 import { PaymentCreatedListener } from './events/listeners/payment-created-listener';
 import { natsWrapper } from './nats-wrapper';
+import { loggerHelper } from '@isticketing/common';
 
 // Port Used
 const port = 3000;
@@ -26,6 +27,14 @@ const natsURL = process.env.NATS_URL;
 
 // Nats Client Id (Pods Name)
 const natsClientId = process.env.NATS_CLIENT_ID
+
+// Logstash URL
+const logstashUrl = process.env.LOGSTASH_URL
+
+// Declare a global Functions
+declare global {
+    var logger: any;
+}
 
 // Function that Start Server
 const start = async () => {
@@ -51,35 +60,46 @@ const start = async () => {
         throw new Error("NATS_CLIENT_ID variable not present in the environment");
     }
 
-    // Connect to Nats and MongoDB 
+    if (!logstashUrl) {
+        throw new Error("LOGSTASH_URL variable not present in the environment");
+    }
+
+    // Init logger
+    await loggerHelper.init(logstashUrl);
+    global.logger = loggerHelper.logger;
+
+    // Init third dependencies
     try {
 
+        // Connect to natsWrapper
         await natsWrapper.connect(serviceName, natsClusterId, natsClientId, natsURL);
-
         natsWrapper.client.on('close', () => {
-            console.log('NATS Connection closed!');
+            logger.debug('NATS Connection closed!');
             process.exit();
         });
 
-        process.on('SIGINT', () => natsWrapper.client.close());
-        process.on('SIGTERM', () => natsWrapper.client.close());
-
-        // Listening for events
-        new TicketCreatedListener(natsWrapper.client).listen();
-        new TicketUpdatedListener(natsWrapper.client).listen();
-        new ExpirationCompleteListener(natsWrapper.client).listen();
-        new PaymentCreatedListener(natsWrapper.client).listen();
-
-        console.log(`${serviceName} - Connection to DB..`);
+        // Connect to Database
+        logger.debug(`${serviceName} - Connection to DB...`);
         await mongoose.connect(databaseURI);
-        console.log(`${serviceName} - Connected to DB`);
+        logger.debug(`${serviceName} - Connected to DB`);
+
     } catch (err) {
-        console.log(`${serviceName} - Error : ${err}`);
+        logger.error(`${serviceName} - Error : ${err}`);
+        process.exit();
     }
+
+    process.on('SIGINT', () => natsWrapper.client.close());
+    process.on('SIGTERM', () => natsWrapper.client.close());
+
+    // Listening for events
+    new TicketCreatedListener(natsWrapper.client).listen();
+    new TicketUpdatedListener(natsWrapper.client).listen();
+    new ExpirationCompleteListener(natsWrapper.client).listen();
+    new PaymentCreatedListener(natsWrapper.client).listen();
 
     // Publish service
     app.listen(port, () => {
-        console.log(`${serviceName} - listing on port : ${port}`);
+        logger.info(`${serviceName} - listing on port : ${port}`);
     });
 };
 

@@ -46,3 +46,4 @@ app.get('*', () => {
 app.use(errorHandler);
 
 export { app };
+

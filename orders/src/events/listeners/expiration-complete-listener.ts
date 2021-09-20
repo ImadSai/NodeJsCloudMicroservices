@@ -1,5 +1,5 @@
 import { Message } from "node-nats-streaming";
-import { Subjects, Listener, ExpirationCompleteEvent, OrderStatus, NotFoundError } from "@isticketing/common";
+import { Subjects, Listener, ExpirationCompleteEvent, OrderStatus, NotFoundError, loggerHelper } from "@isticketing/common";
 import { queueGroupName } from "./queue-group-name";
 import { Order } from "../../models/order";
 import { natsWrapper } from "../../nats-wrapper";
@@ -41,6 +41,9 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
                 id: order.ticket.id
             }
         });
+
+        // Log informations 
+        logger.info(`Order cancelled`, { "orderId": order.id, "ticketId": order.ticket.id });
 
         // ACK message
         msg.ack();

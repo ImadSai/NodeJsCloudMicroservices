@@ -1,12 +1,11 @@
 import mongoose from 'mongoose';
 import express, { Request, Response } from "express";
-import { BadRequestError, NotFoundError, OrderStatus, requireAuth, validateRequest } from "@isticketing/common";
+import { BadRequestError, loggerHelper, NotFoundError, OrderStatus, requireAuth, validateRequest } from "@isticketing/common";
 import { body } from 'express-validator';
 import { Ticket } from '../models/ticket';
 import { Order } from '../models/order';
 import { OrderCreatedPublisher } from '../events/publishers/order-created-publisher';
 import { natsWrapper } from '../nats-wrapper';
-import Logger from '../models/logger';
 
 const router = express.Router();
 
@@ -60,7 +59,8 @@ router.post('/api/orders', requireAuth, [
         }
     });
 
-    Logger.info(`Order created`);
+    // Log informations 
+    logger.info(`Order created`, { "orderId": order.id, "ticketId": ticket.id, "price": ticket.price });
 
     res.status(201).send(order);
 });
