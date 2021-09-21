@@ -4,14 +4,25 @@ import { app } from './app';
 // Port Used
 const port = 3000;
 
+// Application name
+const applicationName = "ticketing";
+
 // Service name
-const serviceName = "Authentication Service";
+const serviceName = "AuthenticationService";
 
 // JWT Key
 const jwtKey = process.env.JWT_KEY;
 
 // Database URL
 const databaseURI = process.env.MONGO_URI;
+
+// Logstash URL
+const logstashUrl = process.env.LOGSTASH_URL
+
+// Declare a global Functions
+declare global {
+    var logger: any;
+}
 
 // Function that Start Server
 const start = async () => {
@@ -25,18 +36,30 @@ const start = async () => {
         throw new Error("MONGO_URI variable not present in the environment");
     }
 
+    if (!logstashUrl) {
+        throw new Error("LOGSTASH_URL variable not present in the environment");
+    }
+
+    // Init logger
+    await loggerHelper.init({
+        logstashAddress: logstashUrl,
+        applicationName: applicationName,
+        serviceName: serviceName
+    });
+    global.logger = loggerHelper.logger;
+
     // Connect to MongoDB
     try {
-        console.log(`${serviceName} - Connection to DB..`);
+        logger.debug(`${serviceName} - Connection to DB..`);
         await mongoose.connect(databaseURI);
-        console.log(`${serviceName} - Connected to DB`);
+        logger.debug(`${serviceName} - Connected to DB`);
     } catch (err) {
-        console.log(`${serviceName} - Error : ${err}`);
+        logger.error(`${serviceName} - Error : ${err}`);
     }
 
     // Publish service
     app.listen(port, () => {
-        console.log(`${serviceName} - listing on port : ${port}`);
+        logger.info(`${serviceName} - listing on port : ${port}`);
     });
 };
 

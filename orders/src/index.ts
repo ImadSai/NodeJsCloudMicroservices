@@ -10,8 +10,11 @@ import { loggerHelper } from '@isticketing/common';
 // Port Used
 const port = 3000;
 
+// Application name
+const applicationName = "ticketing";
+
 // Service name
-const serviceName = "Orders Service";
+const serviceName = "OrdersService";
 
 // JWT Key
 const jwtKey = process.env.JWT_KEY;
@@ -65,7 +68,11 @@ const start = async () => {
     }
 
     // Init logger
-    await loggerHelper.init(logstashUrl);
+    await loggerHelper.init({
+        logstashAddress: logstashUrl,
+        applicationName: applicationName,
+        serviceName: serviceName
+    });
     global.logger = loggerHelper.logger;
 
     // Init third dependencies

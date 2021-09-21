@@ -43,7 +43,7 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
         });
 
         // Log informations 
-        logger.info(`Order cancelled`, { "orderId": order.id, "ticketId": order.ticket.id });
+        logger.error(`Order cancelled`, { "orderId": order.id, "ticketId": order.ticket.id });
 
         // ACK message
         msg.ack();
