@@ -6,6 +6,7 @@ import { TicketUpdatedListener } from './events/listeners/ticket-updated-listene
 import { PaymentCreatedListener } from './events/listeners/payment-created-listener';
 import { natsWrapper } from './nats-wrapper';
 import { loggerHelper } from '@isticketing/common';
+import Net from 'net';
 
 // Port Used
 const port = 3000;
@@ -66,6 +67,15 @@ const start = async () => {
     if (!logstashUrl) {
         throw new Error("LOGSTASH_URL variable not present in the environment");
     }
+
+    // Check Logstash connection
+    const client = new Net.Socket();
+    client.connect({ port: 5000, host: "192.168.1.109" }, function () {
+        console.log('TCP connection established with the server.');
+    });
+    client.on('end', function () {
+        console.log('Requested an end to the TCP connection');
+    });
 
     // Init logger
     await loggerHelper.init({

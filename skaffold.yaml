@@ -13,6 +13,24 @@ build:
     sha256: {}
   # Liste of Artifacts
   artifacts:
+    # Logs Centralize Service Image
+    - image: imadsa/logs-centralize
+      context: logs-centralize
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts"
+            dest: .
+    # Logs Worker Service Image
+    - image: imadsa/logs-worker
+      context: logs-worker
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts"
+            dest: .
     # Authentication Service Image
     - image: imadsa/auth
       context: auth
