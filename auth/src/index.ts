@@ -17,9 +17,6 @@ const jwtKey = process.env.JWT_KEY;
 // Database URL
 const databaseURI = process.env.MONGO_URI;
 
-// Logstash URL
-const logstashUrl = process.env.LOGSTASH_URL
-
 // Declare a global Functions
 declare global {
     var logger: any;
@@ -37,13 +34,10 @@ const start = async () => {
         throw new Error("MONGO_URI variable not present in the environment");
     }
 
-    if (!logstashUrl) {
-        throw new Error("LOGSTASH_URL variable not present in the environment");
-    }
-
     // Init logger
     await loggerHelper.init({
-        logstashAddress: logstashUrl,
+        logsServiceHost: "logs-srv",
+        logsServicePort: 3000,
         applicationName: applicationName,
         serviceName: serviceName
     });

@@ -44,7 +44,7 @@ logQueue.process(maxJobsPerWorker, async (job, done) => {
 // Retry function on failure
 async function retryOnFailure(job: Queue.Job, log: string) {
     await logQueue.add(log, {
-        attempts: 10,
+        attempts: 2,
         backoff: {
             type: "exponential",
             delay: delay

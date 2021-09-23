@@ -32,9 +32,6 @@ const natsClientId = process.env.NATS_CLIENT_ID
 // Stripe Key
 const stripeKey = process.env.STRIPE_KEY;
 
-// Logstash URL
-const logstashUrl = process.env.LOGSTASH_URL
-
 // Declare a global Functions
 declare global {
     var logger: any;
@@ -68,13 +65,10 @@ const start = async () => {
         throw new Error("STRIPE_KEY variable not present in the environment");
     }
 
-    if (!logstashUrl) {
-        throw new Error("LOGSTASH_URL variable not present in the environment");
-    }
-
     // Init logger
     await loggerHelper.init({
-        logstashAddress: logstashUrl,
+        logsServiceHost: "logs-srv",
+        logsServicePort: 3000,
         applicationName: applicationName,
         serviceName: serviceName
     });

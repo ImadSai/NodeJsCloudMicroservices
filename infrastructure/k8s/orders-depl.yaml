@@ -28,8 +28,6 @@ spec:
               value: ticketing
             - name: MONGO_URI
               value: "mongodb://orders-mongo-srv:27017/orders"
-            - name: LOGSTASH_URL
-              value: "192.168.1.109:5000"
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:

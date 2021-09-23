@@ -32,9 +32,6 @@ const natsURL = process.env.NATS_URL;
 // Nats Client Id (Pods Name)
 const natsClientId = process.env.NATS_CLIENT_ID
 
-// Logstash URL
-const logstashUrl = process.env.LOGSTASH_URL
-
 // Declare a global Functions
 declare global {
     var logger: any;
@@ -64,10 +61,6 @@ const start = async () => {
         throw new Error("NATS_CLIENT_ID variable not present in the environment");
     }
 
-    if (!logstashUrl) {
-        throw new Error("LOGSTASH_URL variable not present in the environment");
-    }
-
     // Check Logstash connection
     const client = new Net.Socket();
     client.connect({ port: 5000, host: "192.168.1.109" }, function () {
@@ -79,7 +72,8 @@ const start = async () => {
 
     // Init logger
     await loggerHelper.init({
-        logstashAddress: logstashUrl,
+        logsServiceHost: "logs-srv",
+        logsServicePort: 3000,
         applicationName: applicationName,
         serviceName: serviceName
     });
