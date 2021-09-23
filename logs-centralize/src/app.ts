@@ -1,35 +1,36 @@
-import net from 'net';
+import express from 'express';
 import Queue from "bull";
+import { Request, Response } from 'express';
 
 const serviceName = "Logs_centralize";
-const PORT = 3000
-const IP = '127.0.0.1'
+const port = 3000;
 
 // Create Redis client
-const expirationQueue = new Queue<any>('work', 'redis://127.0.0.1:6379');
+const logsQueue = new Queue<any>('work', 'redis://127.0.0.1:6379');
 
-// Create TCP Server
-function createServer(): net.Server {
-    return net.createServer((socket) => {
+const app = express();
 
-        // When client send Data
-        socket.on('data', async (data) => {
-            const log = { "data": data.toString() };
-            console.log(log);
-            expirationQueue.add(log);
-        });
+app.use(express.json());
 
-        // When socket is closed
-        socket.on('close', () => {
-            console.log('Client disconnected');
-        });
-    });
-}
+// Job Options
+let jobOptions = {
+    removeOnComplete: true,
+    removeOnFail: false
+};
 
-// Create Server
-var server = createServer();
+app.post('/', async (req: Request, res: Response) => {
+    const log = req.body;
+    await logsQueue.add(log, {
+        attempts: 3,
+        backoff: {
+            type: "exponential",
+            delay: 5000
+        }
+    }, jobOptions);
+    res.status(200).send();
+});
 
-// Server listen
-server.listen(PORT, IP, () => {
-    console.log(`${serviceName} - listing on : ${IP}:${PORT} (TCP)`);
+// Publish service
+app.listen(port, () => {
+    console.log(`${serviceName} - listing on port : ${port}`);
 });

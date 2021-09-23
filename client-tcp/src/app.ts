@@ -1,20 +1,12 @@
 import net from 'net';
+import { loggerHelper } from './helpers/loggerHelper';
 
 const serviceName = "Logging_centralize";
-const PORT = 9000
-const HOST = 'ticketing.test'
+const PORT = 3000
+const HOST = '127.0.0.1'
 
-var client = new net.Socket();
+loggerHelper.init({ logstashAddress: "127.0.0.1:3000", applicationName: "clientapp", serviceName: "clientservice" });
 
-client.connect(PORT, HOST, function () {
-    console.log('Connected');
-    client.write('Hello, server! Love, Client.');
-});
+const logger = loggerHelper.logger;
 
-client.on('close', function () {
-    console.log('Connection closed');
-});
-
-client.on('end', function () {
-    console.log('Server shutdown');
-});
+logger.info("this is a message")
