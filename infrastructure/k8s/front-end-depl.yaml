@@ -1,32 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: client-depl
+  name: front-end-depl
   #namespace: ticketing
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: client
+      app: front-end
   template:
     metadata:
       labels:
-        app: client
+        app: front-end
     spec:
       containers:
-        - name: client
-          image: imadsa/client:latest
+        - name: front-end
+          image: imadsa/front-end:latest
           imagePullPolicy: Always
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: client-srv
+  name: front-end-srv
 spec:
   selector:
-    app: client
+    app: front-end
   ports:
-    - name: client
+    - name: front-end
       protocol: TCP
-      port: 3000
-      targetPort: 3000
+      port: 80
+      targetPort: 80

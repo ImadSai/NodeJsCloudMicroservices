@@ -76,15 +76,15 @@ build:
         manual:
           - src: "**/*.js"
             dest: .
-    # Client Image
-    - image: imadsa/client
-      context: client
-      docker:
-        dockerfile: Dockerfile
-      sync:
-        manual:
-          - src: "**/*.js"
-            dest: .
+    # Front-end Image
+    #- image: imadsa/front-end
+      #context: front-end
+      #docker:
+        #dockerfile: Dockerfile
+      #sync:
+        #manual:
+          #- src: "**/*.js"
+            #dest: .
 # Deployment specifications
 deploy:
   kubectl:

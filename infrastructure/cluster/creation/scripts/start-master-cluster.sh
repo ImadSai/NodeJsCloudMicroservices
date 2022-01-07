@@ -2,7 +2,7 @@
 # startup.sh
 
 # Initialisation du Cluster
-sudo kubeadm init --apiserver-advertise-address=192.168.1.111 --node-name $HOSTNAME --pod-network-cidr=10.244.0.0/16
+sudo kubeadm init --node-name $HOSTNAME --pod-network-cidr=10.244.0.0/16
 
 # Copy the config
 mkdir -p $HOME/.kube

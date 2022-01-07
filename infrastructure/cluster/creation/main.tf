@@ -41,7 +41,7 @@ resource "proxmox_vm_qemu" "proxmox_vm_master" {
   target_node = "pve"
 
   # The template name to clone this vm from and Full clone
-  clone      = "ubuntu-cloudinit-template"
+  clone      = "centos-kube-template"
   full_clone = false
 
   # Activate QEMU agent for this VM
@@ -65,7 +65,7 @@ resource "proxmox_vm_qemu" "proxmox_vm_master" {
   cipassword = "worker"
 
   disk {
-    size     = "10G"
+    size     = "15G"
     type     = "virtio"
     storage  = "local-lvm"
     iothread = 1
@@ -124,7 +124,7 @@ resource "proxmox_vm_qemu" "proxmox_vm_worker" {
   target_node = "pve"
 
   # The template name to clone this vm from and Full clone
-  clone      = "ubuntu-cloudinit-template"
+  clone      = "centos-kube-template"
   full_clone = false
 
   # Activate QEMU agent for this VM
