@@ -1,0 +1,3 @@
+[submodule "NodeJsCloudMicroservices-common"]
+	path = NodeJsCloudMicroservices-common
+	url = https://github.com/ImadSai/NodeJsCloudMicroservices-common.git
