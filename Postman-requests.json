@@ -1,0 +1,311 @@
+{
+	"info": {
+		"_postman_id": "028cb197-8b27-4ed0-9bf7-dce16eb516f0",
+		"name": "Ticketing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Tickets",
+			"item": [
+				{
+					"name": "newTicket",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Cookie\",\n    \"price\": 10\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ticketing.test/api/tickets",
+							"protocol": "https",
+							"host": [
+								"ticketing",
+								"test"
+							],
+							"path": [
+								"api",
+								"tickets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getTicket",
+					"protocolProfileBehavior": {
+						"strictSSL": false
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://ticketing.test/api/tickets/6136ce8fd231409661c51c98",
+							"protocol": "https",
+							"host": [
+								"ticketing",
+								"test"
+							],
+							"path": [
+								"api",
+								"tickets",
+								"6136ce8fd231409661c51c98"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateTicket",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"gad el maleh\",\n    \"price\": 90\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ticketing.test/api/tickets/61364ae8b0fe383ff4c5cc6e",
+							"protocol": "https",
+							"host": [
+								"ticketing",
+								"test"
+							],
+							"path": [
+								"api",
+								"tickets",
+								"61364ae8b0fe383ff4c5cc6e"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "newOrder",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ticketId\": \"61364ae8b0fe383ff4c5cc6e\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ticketing.test/api/orders",
+							"protocol": "https",
+							"host": [
+								"ticketing",
+								"test"
+							],
+							"path": [
+								"api",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getOrder",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://ticketing.test/api/orders/61364b0c9dd78de837cc4684",
+							"protocol": "https",
+							"host": [
+								"ticketing",
+								"test"
+							],
+							"path": [
+								"api",
+								"orders",
+								"61364b0c9dd78de837cc4684"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "signupUser",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"imad123@hotmail.fr\",\n    \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "https://ticketing.test/api/users/signup",
+							"protocol": "https",
+							"host": [
+								"ticketing",
+								"test"
+							],
+							"path": [
+								"api",
+								"users",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "currentUser",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://ticketing.test/api/users/currentuser",
+							"protocol": "https",
+							"host": [
+								"ticketing",
+								"test"
+							],
+							"path": [
+								"api",
+								"users",
+								"currentuser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signoutUser",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://ticketing.test/api/users/signout",
+							"protocol": "https",
+							"host": [
+								"ticketing",
+								"test"
+							],
+							"path": [
+								"api",
+								"users",
+								"signout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SignInUser",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"imad123@hotmail.fr\",\n    \"password\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ticketing.test/api/users/signin",
+							"protocol": "https",
+							"host": [
+								"ticketing",
+								"test"
+							],
+							"path": [
+								"api",
+								"users",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payments",
+			"item": [
+				{
+					"name": "newPayment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"orderId\": \"61364b0c9dd78de837cc4684\", \n    \"token\": \"tok_visa\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ticketing.test/api/payments",
+							"protocol": "https",
+							"host": [
+								"ticketing",
+								"test"
+							],
+							"path": [
+								"api",
+								"payments"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UI",
+			"item": [
+				{
+					"name": "HomePage",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
