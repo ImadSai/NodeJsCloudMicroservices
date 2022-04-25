@@ -62,7 +62,10 @@ qemu-img convert -O qcow2 -f raw INPUT-PATH  OUTPUT.qcow2
 ```
 
 - Création d'une VM avec ID 1000 nommée centos-kube-template, 4Go RAM, 1 proco, 2 coeurs
-  qm create 1000 -name centos-kube-template -memory 4096 -net0 virtio,bridge=vmbr0 -cores 2 -sockets 1 -cpu cputype=kvm64 -kvm 1 -numa 1
+
+```
+qm create 1000 -name centos-kube-template -memory 4096 -net0 virtio,bridge=vmbr0 -cores 2 -sockets 1 -cpu cputype=kvm64 -kvm 1 -numa 1
+```
 
 - Import du disque
 
