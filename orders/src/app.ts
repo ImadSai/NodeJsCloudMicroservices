@@ -12,6 +12,9 @@ const app = express();
 // On averti que le serveur sera derriere un Proxy
 app.set('trust proxy', true);
 
+// Disable powered by
+app.disable("x-powered-by");
+
 app.use(express.json());
 
 // Use Cookie

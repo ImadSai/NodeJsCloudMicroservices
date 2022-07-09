@@ -10,6 +10,9 @@ const logsQueue = new Queue<any>('work', 'redis://127.0.0.1:6379');
 
 const app = express();
 
+// Disable powered by
+app.disable("x-powered-by");
+
 app.use(express.json());
 
 // Job Options

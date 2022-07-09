@@ -6,6 +6,9 @@ import { newPaymentRouter } from './routes/new';
 
 const app = express();
 
+// Disable powered by
+app.disable("x-powered-by");
+
 // On averti que le serveur sera derriere un Proxy
 app.set('trust proxy', true);
 
