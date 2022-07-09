@@ -15,10 +15,12 @@ router.post('/api/users/signup', [
 ], validateRequest, async (req: Request, res: Response) => {
 
     // Get email and password
-    const { email, password } = req.body;
+    const { password } = req.body;
+
+    const query = { email: req.body.email.toString() };
 
     // Check if the email exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne(query);
     if (existingUser) {
         throw new BadRequestError("Email in use");
     }

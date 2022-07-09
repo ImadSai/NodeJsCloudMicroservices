@@ -15,11 +15,13 @@ router.post('/api/users/signin', [
     body('password').trim().isLength({ min: 4, max: 20 }).withMessage('You must suppy a password'),
 ], validateRequest, async (req: Request, res: Response) => {
 
-    // Get email and password
-    const { email, password } = req.body;
+    // Get password
+    const { password } = req.body;
+
+    const query = { email: req.body.email.toString() };
 
     // Check if the email exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne(query);
     if (!existingUser) {
         throw new BadRequestError("Bad Email/Password");
     }
